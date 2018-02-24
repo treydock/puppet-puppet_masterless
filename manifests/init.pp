@@ -6,12 +6,13 @@ class puppet_masterless (
   $environment_path        = undef,
   # PuppetDB config
   $puppetdb_version        = 'present',
-  $puppetdb_server         = 'puppetdb.ten.osc.edu',
+  $puppetdb_server         = "puppetdb.${::domain}",
 
   $papply_path             = '/usr/sbin/papply',
   $papply_early_tags       = ['no_such_tag'],
   $papply_wait_for_mounts  = [],
   #$fact_refresh_path       = '/usr/libexec/mcollective/refresh-mcollective-metadata',
+  $foreman_url             = "foreman.${::domain}",
 ) {
 
   #$_foreman_masterless_path = pick($foreman_masterless_path, "${::rubysitedir}/puppet/reports/foreman_masterless.rb")
