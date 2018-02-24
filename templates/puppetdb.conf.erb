@@ -1,0 +1,6 @@
+#### File managed by Puppet ####
+# <%= scope['settings::server'] %>:<%= @__file__.gsub(/\/environments\/([a-zA-Z0-9_\-]+)\//, "/environments/$::environment/") %>
+[main]
+port = 8081
+soft_write_failure = false
+server = <%= @puppetdb_server %>

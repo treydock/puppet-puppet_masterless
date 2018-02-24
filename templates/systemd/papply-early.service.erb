@@ -1,0 +1,21 @@
+#### File managed by Puppet ####
+# <%= scope['settings::server'] %>:<%= @__file__.gsub(/\/environments\/([a-zA-Z0-9_\-]+)\//, "/environments/$::environment/") %>
+
+[Unit]
+Description=Run puppet masterless - early
+DefaultDependencies=no
+Conflicts=shutdown.target
+Conflicts=shutdown.target
+After=rhel-readonly.service tmp.mount
+Before=local-fs.target
+
+[Service]
+ExecStart=<%= @_sbin_dir %>/papply-service early
+Type=oneshot
+TimeoutSec=600
+RemainAfterExit=yes
+SuccessExitStatus=0
+SuccessExitStatus=2
+
+[Install]
+WantedBy=local-fs.target

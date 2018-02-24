@@ -1,0 +1,47 @@
+#!/bin/bash
+#### File managed by Puppet ####
+# <%= scope['settings::server'] %>:<%= @__file__.gsub(/\/environments\/([a-zA-Z0-9_\-]+)\//, "/environments/$::environment/") %>
+
+TYPE=$1
+
+if [ "x${TYPE}" = "xfinal" ]; then
+  ARGS=""
+elif [ "x${TYPE}" = "xearly" ]; then
+  ARGS="--tags <%= @papply_early_tags.join(',') %>"
+else
+  ARGS=""
+fi
+
+mount_wait() {
+  mount=$1
+  count=0
+
+  until mountpoint -q $mount; do
+    # Only wait 30 seconds then move on
+    if ((count > 30)); then
+      break
+    fi
+    ((count++))
+    sleep 1
+  done
+}
+
+if [ "x$(/opt/puppetlabs/bin/facter osc_host_type)" = "xrw" ]; then
+  if [ "$TYPE" = "final" ]; then
+    /opt/puppetlabs/bin/puppet agent --onetime --no-daemonize --detailed-exitcodes --certname $(hostname -f)
+    ret=$?
+  else
+    ret=0
+  fi
+else
+  if [ "$TYPE" = "final" ]; then
+    <%- @papply_wait_for_mounts.each do |papply_wait_for_mount| -%>
+    echo "Wait for mount point <%= papply_wait_for_mount %>"
+    mount_wait <%= papply_wait_for_mount %>
+    <%- end -%>
+  fi
+  <%= @papply_path %> $ARGS --color false
+  ret=$?
+fi
+
+exit $ret

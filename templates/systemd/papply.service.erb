@@ -1,0 +1,20 @@
+#### File managed by Puppet ####
+# <%= scope['settings::server'] %>:<%= @__file__.gsub(/\/environments\/([a-zA-Z0-9_\-]+)\//, "/environments/$::environment/") %>
+
+[Unit]
+Description=Run puppet masterless
+DefaultDependencies=no
+Conflicts=shutdown.target
+Wants=basic.target
+After=basic.target network.target
+
+[Service]
+ExecStart=<%= @_sbin_dir %>/papply-service final
+Type=idle
+TimeoutSec=600
+RemainAfterExit=yes
+SuccessExitStatus=0
+SuccessExitStatus=2
+
+[Install]
+WantedBy=multi-user.target

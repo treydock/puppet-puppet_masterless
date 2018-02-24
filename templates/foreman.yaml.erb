@@ -1,0 +1,12 @@
+#### File managed by Puppet ####
+# <%= scope['settings::server'] %>:<%= @__file__.gsub(/\/environments\/([a-zA-Z0-9_\-]+)\//, "/environments/$::environment/") %>
+---
+:url: "https://foreman.ten.osc.edu"
+:ssl_ca: "/etc/puppetlabs/puppet/ssl/certs/ca.pem"
+:user: ""
+:password: ""
+:puppetdir: "/opt/puppetlabs/puppet/cache"
+:puppetuser: "puppet"
+:facts: true
+:timeout: 10
+:threads: null

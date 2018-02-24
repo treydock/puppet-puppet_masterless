@@ -1,0 +1,26 @@
+#### File managed by Puppet ####
+# <%= scope['settings::server'] %>:<%= @__file__.gsub(/\/environments\/([a-zA-Z0-9_\-]+)\//, "/environments/$::environment/") %>
+[main]
+  logdir          = /var/log/puppetlabs/puppet
+  rundir          = /var/run/puppetlabs
+  ssldir          = /dev/null
+  rrddir          = $statedir/rrd
+  environmentpath = <%= @_environment_path %>
+  hiera_config    = <%= @_hiera_config %>
+  show_diff       = false
+  report          = false
+  reports         = tagmail
+  #reports         = foreman_masterless
+  storeconfigs    = false
+  #storeconfigs    = puppetdb
+  parser          = future
+  # Begin puppet4 / puppet5 - remove once upgraded
+  trusted_node_data = true
+  stringify_facts = false
+  ordering = manifest
+  strict_variables = false
+  # End puppet4 / puppet5 - remove once upgraded
+  # server is only defined so it can be set in header of some templates
+  server          = localhost
+  # Default is warning
+  strict = off

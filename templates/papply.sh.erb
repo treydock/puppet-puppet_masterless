@@ -1,0 +1,67 @@
+#!/bin/bash
+#### File managed by Puppet ####
+# <%= scope['settings::server'] %>:<%= @__file__.gsub(/\/environments\/([a-zA-Z0-9_\-]+)\//, "/environments/$::environment/") %>
+
+readonly ENVIRONMENTPATH="<%= @_environment_path %>"
+readonly CONFDIR="<%= @_conf_dir %>"
+readonly DEF_ENV="$(/opt/puppetlabs/bin/puppet agent --configprint environment)"
+readonly PROGNAME=$(basename $0)
+
+usage () {
+
+cat << EOF
+usage: ${PROGNAME} [OPTIONS]
+
+Puppet masterless script.
+
+All arguments are passed to "puppet apply" except those listed under OPTIONS.
+
+OPTIONS:
+
+  -d, --debug     Show debug output, also passes --debug to puppet
+  -h, --help      Show this message
+
+EXAMPLES:
+
+Run puppet apply against site.pp in ${ENVIRONMENTPATH}/${DEF_ENV}/manifests
+
+${PROGNAME}
+
+Run puppet apply using --noop against site.pp in ${ENVIRONMENTPATH}/${DEF_ENV}/manifests
+
+${PROGNAME} --noop
+
+EOF
+}
+
+ARGS=()
+
+while test ${#} -gt 0; do
+  case $1 in
+    -h|--help) usage ; exit 0 ;;
+    -d|--debug) set -x ; ARGS+=($1) ;;
+   *) ARGS+=($1) ;;
+  esac
+  shift
+done
+
+ENVIRONMENT="${PUPPET_ENV:-$DEF_ENV}"
+PUPPET_ARGS="${ARGS[@]}"
+
+ENVDIR="${ENVIRONMENTPATH}/${ENVIRONMENT}"
+SITEPP="${ENVDIR}/manifests/site.pp"
+
+if [ ! -f /opt/puppetlabs/puppet/cache/state/agent_disabled.lock ]; then
+  # Download plugins from puppet master
+  #/opt/puppetlabs/bin/puppet plugin download --confdir ${CONFDIR}
+  #[[ $? -ne 0 ]] && { echo "Plugin download failed."; exit 10; }
+  # Apply puppet catalog using masterless puppet
+  /opt/puppetlabs/bin/puppet apply --environment ${ENVIRONMENT} --confdir ${CONFDIR} ${SITEPP} --write-catalog-summary --detailed-exitcodes ${PUPPET_ARGS}
+  ret=$?
+  # Refresh facts used by mcollective
+  #if [ -f <%= @fact_refresh_path %> ]; then
+  #  <%= @fact_refresh_path %>
+  #fi
+fi
+
+exit $ret
